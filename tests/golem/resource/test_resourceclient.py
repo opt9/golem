@@ -113,25 +113,16 @@ class TestClientOptions(unittest.TestCase):
         assert isinstance(filtered, ClientOptions)
 
 
-@unittest.mock.patch('twisted.internet.reactor', create=True)
-class TestAsyncRequest(unittest.TestCase):
+class TestAsyncRequest(TestWithReactor):
 
-    def test_initialization(self, reactor):
-        AsyncRequest.initialized = False
+    def test_initialization(self):
         request = AsyncRequest(lambda x: x)
-        assert AsyncRequest.initialized
-
         assert request.args == []
         assert request.kwargs == {}
-        assert reactor.suggestThreadPoolSize.call_count == 1
 
         request = AsyncRequest(lambda x: x, "arg", kwarg="kwarg")
         assert request.args == ("arg",)
         assert request.kwargs == {"kwarg": "kwarg"}
-        assert reactor.suggestThreadPoolSize.call_count == 1
-
-
-class TestAsyncRun(TestWithReactor):
 
     def test_callbacks(self):
         done = [False]
